@@ -1,9 +1,30 @@
-from fastapi import FastAPI
-import models
-from database import engine
+from typing import Annotated
 
+from fastapi import FastAPI, Depends
+from sqlalchemy.orm import Session
+
+import models
+from models import Todos
+from database import engine, SessionLocal
 
 app = FastAPI()
 
 # this creates a new database
 models.Base.metadata.create_all(bind=engine)
+
+
+# this function opens and close database(dependencies injection)
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db  # this is run before our request happens
+    finally:
+        db.close()  # this closes db after our response is returned
+
+
+db_dependency_injection = Annotated[Session, Depends(get_db)]
+
+
+@app.get('/')
+async def read_all(db: db_dependency_injection):
+    return db.query(Todos).all()
