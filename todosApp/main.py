@@ -8,11 +8,14 @@ from starlette import status
 import models
 from models import Todos
 from database import engine, SessionLocal
+from routers import auth
 
 app = FastAPI()
 
 # this creates a new database
 models.Base.metadata.create_all(bind=engine)
+#  this includes the auth file as a router to connect the auth to the main port
+app.include_router(auth.router)
 
 
 # this function opens and close database(dependencies injection)
