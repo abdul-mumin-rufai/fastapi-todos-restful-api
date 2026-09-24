@@ -1,12 +1,11 @@
 from typing import Annotated
-
 from fastapi import APIRouter, Depends, HTTPException, Path
 from pydantic import Field, BaseModel
 from sqlalchemy.orm import Session
 from starlette import status
-
 from models import Todos
 from database import SessionLocal
+from .auth import get_current_user
 
 router = APIRouter()
 
@@ -21,6 +20,7 @@ def get_db():
 
 
 db_dependency_injection = Annotated[Session, Depends(get_db)]
+user_token_dependency = Annotated[dict, Depends(get_current_user)]
 
 
 class TodoRequest(BaseModel):
@@ -44,8 +44,10 @@ async def get_todo_by_id(db: db_dependency_injection, todo_id: int = Path(gt=0))
 
 
 @router.post('/todo', status_code=status.HTTP_201_CREATED)
-async def create_todo(db: db_dependency_injection, todo_request: TodoRequest):
-    todo_model = Todos(**todo_request.dict())
+async def create_todo(user: user_token_dependency, db: db_dependency_injection, todo_request: TodoRequest):
+    if not user:
+        raise HTTPException(status_code=401, detail='Could Not Authenticate User')
+    todo_model = Todos(**todo_request.dict(), owner_id=user.get('id'))
     db.add(todo_model)
     db.commit()
 
