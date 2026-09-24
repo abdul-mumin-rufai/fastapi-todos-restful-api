@@ -31,8 +31,10 @@ class TodoRequest(BaseModel):
 
 
 @router.get('/', status_code=status.HTTP_200_OK)
-async def read_all(db: db_dependency_injection):
-    return db.query(Todos).all()
+async def read_all(user: user_token_dependency, db: db_dependency_injection):
+    if not user:
+        raise HTTPException(status_code=401, detail='Could Not Authenticate User')
+    return db.query(Todos).filter(Todos.owner_id == user.get('id')).all()
 
 
 @router.get('/todo/{todo_id}', status_code=status.HTTP_200_OK)
@@ -74,4 +76,3 @@ async def delete_todo(db: db_dependency_injection, todo_id: int = Path(gt=0)):
     db.query(Todos).filter(Todos.id == todo_id).delete()
 
     db.commit()
-
