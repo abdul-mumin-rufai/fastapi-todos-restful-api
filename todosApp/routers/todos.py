@@ -34,12 +34,13 @@ class TodoRequest(BaseModel):
 async def read_all(user: user_token_dependency, db: db_dependency_injection):
     if not user:
         raise HTTPException(status_code=401, detail='Could Not Authenticate User')
-    return db.query(Todos).filter(Todos.owner_id == user.get('id')).all()
+    return db.query(Todos).filter(Todos.owner_id == user.get('id')).all()  # type: ignore
 
 
 @router.get('/todo/{todo_id}', status_code=status.HTTP_200_OK)
-async def get_todo_by_id(db: db_dependency_injection, todo_id: int = Path(gt=0)):
-    todo_model = db.query(Todos).filter(Todos.id == todo_id).first()
+async def get_todo_by_id(user: user_token_dependency, db: db_dependency_injection, todo_id: int = Path(gt=0)):
+    todo_model = db.query(Todos).filter(Todos.id == todo_id)\
+        .filter(Todos.owner_id == user.get('id')).first()  # type: ignore
     if todo_model is not None:
         return todo_model
     raise HTTPException(status_code=404, detail='Todo not found')
