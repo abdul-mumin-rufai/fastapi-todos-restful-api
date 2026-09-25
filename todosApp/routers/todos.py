@@ -39,7 +39,7 @@ async def read_all(user: user_token_dependency, db: db_dependency_injection):
 
 @router.get('/todo/{todo_id}', status_code=status.HTTP_200_OK)
 async def get_todo_by_id(user: user_token_dependency, db: db_dependency_injection, todo_id: int = Path(gt=0)):
-    todo_model = db.query(Todos).filter(Todos.id == todo_id)\
+    todo_model = db.query(Todos).filter(Todos.id == todo_id) \
         .filter(Todos.owner_id == user.get('id')).first()  # type: ignore
     if todo_model is not None:
         return todo_model
@@ -61,7 +61,7 @@ async def update_todo(user: user_token_dependency, db: db_dependency_injection,
     if not user:
         if not user:
             raise HTTPException(status_code=401, detail='Could Not Authenticate User')
-    todo_model = db.query(Todos).filter(Todos.id == todo_id)\
+    todo_model = db.query(Todos).filter(Todos.id == todo_id) \
         .filter(Todos.owner_id == user.get('id')).first()  # type: ignore
     if todo_model is None:
         raise HTTPException(status_code=404, detail='Todo not found in todos list')
@@ -75,10 +75,14 @@ async def update_todo(user: user_token_dependency, db: db_dependency_injection,
 
 
 @router.delete('/todos/delete_todo/{todo_id}', status_code=status.HTTP_204_NO_CONTENT)
-async def delete_todo(db: db_dependency_injection, todo_id: int = Path(gt=0)):
-    todo_model = db.query(Todos).filter(Todos.id == todo_id).first()
+async def delete_todo(user: user_token_dependency, db: db_dependency_injection, todo_id: int = Path(gt=0)):
+    if not user:
+        if not user:
+            raise HTTPException(status_code=401, detail='Could Not Authenticate User')
+    todo_model = db.query(Todos).filter(Todos.id == todo_id). \
+        filter(Todos.owner_id == user.get('id')).first()  # type: ignore
     if todo_model is None:
         raise HTTPException(status_code=404, detail='Todo not found in todos list')
-    db.query(Todos).filter(Todos.id == todo_id).delete()
+    db.query(Todos).filter(Todos.id == todo_id).filter(Todos.owner_id == user.get('id')).delete()  # type: ignore
 
     db.commit()
