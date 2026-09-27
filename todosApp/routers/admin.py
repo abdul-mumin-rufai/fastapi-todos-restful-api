@@ -31,3 +31,14 @@ async def get_all_todos(user: user_token_dependency, db: db_dependency_injection
     if user is None or user.get('role') != 'admin':
         raise HTTPException(status_code=401, detail='Not Authorised for this page')
     return db.query(Todos).all()
+
+
+@router.delete('/delete_todo/{todo_id}', status_code=status.HTTP_204_NO_CONTENT)
+async def delete_todo(user: user_token_dependency, db: db_dependency_injection, todo_id: int = Path(gt=0)):
+    if user is None or user.get('role') != 'admin':
+        raise HTTPException(status_code=401, detail='Not Authorised for this page')
+    todo_model = db.query(Todos).filter(Todos.id == todo_id).first()
+    if todo_model is None:
+        raise HTTPException(status_code=401, detail='Todo Not Found')
+    db.query(Todos).filter(Todos.id == todo_id).delete()
+    db.commit()
