@@ -24,5 +24,5 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    """Downgrade schema."""
+    op.drop_column('users', 'phone_number')
     pass
