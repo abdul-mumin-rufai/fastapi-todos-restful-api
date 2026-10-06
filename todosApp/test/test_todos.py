@@ -89,3 +89,20 @@ def test_read_authenticated_user_todos_by_id_if_id_not_found(test_todo):
     assert response.json() == {'detail': 'Todo not found'}
 
 
+def test_create_testing_todo(test_todo):
+    test_request = {'title': 'My testing',
+                    'description': 'Testing is part of SDLC',
+                    'priority': 5,
+                    'complete': False
+                    }
+    response = client.post('/todo/', json=test_request)
+    assert response.status_code == 201
+
+    db = TestingSessionLocal()
+
+    model = db.query(Todos).filter(Todos.id == 2).first()
+    assert model.title == test_request.get('title')
+    assert model.description == test_request.get('description')
+    assert model.priority == test_request.get('priority')
+    assert model.complete == test_request.get('complete')
+
