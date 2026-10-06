@@ -69,3 +69,23 @@ def test_read_all_authenticated_user_todos(test_todo):
                                 'owner_id': 1,
                                 'id': 1
                                 }]
+
+
+def test_read_authenticated_user_todos_by_id(test_todo):
+    response = client.get('/todo/1')
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {'title': 'FastAPI testing',
+                               'description': 'Testing my FastAPI application',
+                               'priority': 5,
+                               'complete': False,
+                               'owner_id': 1,
+                               'id': 1
+                               }
+
+
+def test_read_authenticated_user_todos_by_id_if_id_not_found(test_todo):
+    response = client.get('/todo/33')
+    assert response.status_code == 404
+    assert response.json() == {'detail': 'Todo not found'}
+
+
