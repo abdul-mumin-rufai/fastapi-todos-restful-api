@@ -106,3 +106,31 @@ def test_create_testing_todo(test_todo):
     assert model.priority == test_request.get('priority')
     assert model.complete == test_request.get('complete')
 
+
+def test_update_todo(test_todo):
+    test_request = {
+        'title': 'Updated my FastAPI title',
+        'description': 'Testing is part of SDLC',
+        'priority': 5,
+        'complete': False,
+    }
+    response = client.put('/todo/1', json=test_request)
+    assert response.status_code == 204
+    db = TestingSessionLocal()  # getting the databases
+    model = db.query(Todos).filter(Todos.id == 1).first()
+    assert model.title == test_request.get('title')
+
+
+def test_update_todo_not_found(test_todo):
+    test_request = {
+        'title': 'Updated my FastAPI title',
+        'description': 'Testing is part of SDLC',
+        'priority': 5,
+        'complete': False,
+    }
+    response = client.put('/todo/999', json=test_request)
+    assert response.status_code == 404
+    assert response.json() == {'detail': 'Todo not found in todos list'}
+
+
+
