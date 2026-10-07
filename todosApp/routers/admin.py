@@ -39,6 +39,6 @@ async def delete_todo(user: user_token_dependency, db: db_dependency_injection, 
         raise HTTPException(status_code=401, detail='Not Authorised for this page')
     todo_model = db.query(Todos).filter(Todos.id == todo_id).first()
     if todo_model is None:
-        raise HTTPException(status_code=401, detail='Todo Not Found')
+        raise HTTPException(status_code=404, detail='Todo Not Found')
     db.query(Todos).filter(Todos.id == todo_id).delete()
     db.commit()
