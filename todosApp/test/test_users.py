@@ -18,3 +18,13 @@ def test_users(test_user):
     assert response.json()['phone_number'] == '0240481753'
 
 
+def test_change_password(test_user):
+    response = client.put('/user/change_password', json={'password': 'testing', 'new_password': 'newpassword'})
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+
+
+def test_change_password_invalid_current_password(test_user):
+    response = client.put('/user/change_password', json={'password': 'wrongpassword', 'new_password': 'newpassword'})
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert response.json() == {'detail': 'Error On Password Change'}
+
