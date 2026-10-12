@@ -7,7 +7,7 @@ app.dependency_overrides[get_current_user] = override_current_user
 
 
 def test_read_all_authenticated_user_todos(test_todo):
-    response = client.get('/')
+    response = client.get('/todos')
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == [{'title': 'FastAPI testing',
                                 'description': 'Testing my FastAPI application',
@@ -19,7 +19,7 @@ def test_read_all_authenticated_user_todos(test_todo):
 
 
 def test_read_authenticated_user_todos_by_id(test_todo):
-    response = client.get('/todo/1')
+    response = client.get('/todos/todo/1')
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {'title': 'FastAPI testing',
                                'description': 'Testing my FastAPI application',
@@ -31,7 +31,7 @@ def test_read_authenticated_user_todos_by_id(test_todo):
 
 
 def test_read_authenticated_user_todos_by_id_if_id_not_found(test_todo):
-    response = client.get('/todo/33')
+    response = client.get('/todos/todo/33')
     assert response.status_code == 404
     assert response.json() == {'detail': 'Todo not found'}
 
@@ -42,7 +42,7 @@ def test_create_testing_todo(test_todo):
                     'priority': 5,
                     'complete': False
                     }
-    response = client.post('/todo/', json=test_request)
+    response = client.post('/todos/todo/', json=test_request)
     assert response.status_code == 201
 
     db = TestingSessionLocal()
@@ -61,7 +61,7 @@ def test_update_todo(test_todo):
         'priority': 5,
         'complete': False,
     }
-    response = client.put('/todo/1', json=test_request)
+    response = client.put('/todos/todo/1', json=test_request)
     assert response.status_code == 204
     db = TestingSessionLocal()  # getting the databases
     model = db.query(Todos).filter(Todos.id == 1).first()
@@ -75,13 +75,13 @@ def test_update_todo_not_found(test_todo):
         'priority': 5,
         'complete': False,
     }
-    response = client.put('/todo/999', json=test_request)
+    response = client.put('/todos/todo/999', json=test_request)
     assert response.status_code == 404
     assert response.json() == {'detail': 'Todo not found in todos list'}
 
 
 def test_delete_todo(test_todo):
-    response = client.delete('todos/delete_todo/1')
+    response = client.delete('/todos/todos/delete_todo/1')
     assert response.status_code == 204
     db = TestingSessionLocal()
     model = db.query(Todos).filter(Todos.id == 1).first()
@@ -89,6 +89,6 @@ def test_delete_todo(test_todo):
 
 
 def test_delete_todo_not_found(test_todo):
-    response = client.delete('todos/delete_todo/999')
+    response = client.delete('/todos/todos/delete_todo/999')
     assert response.status_code == 404
     assert response.json() == {'detail': 'Todo not found in todos list'}
