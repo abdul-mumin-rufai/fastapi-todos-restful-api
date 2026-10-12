@@ -1,9 +1,18 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from .models import Base
 from .database import engine
 from .routers import auth, todos, admin, users
+from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
+
+
+templates = Jinja2Templates(directory='todosApp/templates')  # location of the html file
+
+
+@app.get("/")
+def test(request: Request):
+    return templates.TemplateResponse(request, "home.html", context={})
 
 
 @app.get('/healthy')
