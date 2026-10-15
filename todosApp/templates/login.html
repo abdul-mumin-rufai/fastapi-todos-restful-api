@@ -1,10 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='/css/base.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='/css/bootstrap.css')}}">
     <meta charset="UTF-8">
     <title>Rufai with FastAPI</title>
 </head>
 <body>
-
+  <div class="container">
+    <div class="card">
+      <div class="card-header">
+        Login
+      </div>
+      <div class="card-body">
+        <form id="loginForm">
+          <div class="form-group">
+            <label>
+              Username
+            </label>
+            <input type="text" name="username" class="form-control" autocomplete="username" required>
+          </div>
+          <div class="form-group">
+            <label>
+              Password
+            </label>
+            <input type="password" name="password" class="form-control" autocomplete="current-password" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+      </div>
+      <div class="card-footer text-muted">
+        <a href="/auth/register-page">Register Account</a>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

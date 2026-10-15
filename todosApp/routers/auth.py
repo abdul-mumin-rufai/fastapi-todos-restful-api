@@ -1,6 +1,6 @@
 from datetime import timedelta, datetime, timezone
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
@@ -9,6 +9,7 @@ from ..database import SessionLocal
 from ..models import Users
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from jose import jwt, JWTError
+from fastapi.templating import Jinja2Templates
 
 router = APIRouter(
     prefix='/auth',
@@ -47,6 +48,18 @@ def get_db():
 
 
 db_dependency_injection = Annotated[Session, Depends(get_db)]  # this runs ie interact with the database before our
+
+templates = Jinja2Templates(directory='todosApp/templates')
+
+
+# PAGES
+
+@router.get('/login-page')
+def render_login_page(request: Request):
+    return templates.TemplateResponse(request, "login.html", context={})
+
+
+# ENDPOINTS
 
 
 # request
