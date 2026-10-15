@@ -11,7 +11,7 @@ app = FastAPI()
 templates = Jinja2Templates(directory='todosApp/templates')  # location of the html file
 
 
-app.mount('/static', StaticFiles(directory='todosApp/static'), name='static')
+app.mount('/static', StaticFiles(directory='todosApp/static'), name='static')  # connecting the css and js to the app
 
 
 @app.get("/")
