@@ -130,7 +130,7 @@ async def update_todo(user: user_token_dependency, db: db_dependency_injection,
     db.commit()
 
 
-@router.delete('/todos/delete_todo/{todo_id}', status_code=status.HTTP_204_NO_CONTENT)
+@router.delete('/todo/{todo_id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_todo(user: user_token_dependency, db: db_dependency_injection, todo_id: int = Path(gt=0)):
     if not user:
         if not user:
