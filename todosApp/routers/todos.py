@@ -72,6 +72,19 @@ async def render_add_todo_page(request: Request):
         return redirect_to_login()
 
 
+@router.get('/update-todo-page/{todo_id}')
+async def render_update_todo(request: Request, db: db_dependency_injection, todo_id: int):
+    try:
+        user = await get_current_user(request.cookies.get('access_token'))
+        if user is None:
+            return redirect_to_login()
+        todo = db.query(Todos).filter(Todos.id == todo_id).first()
+
+        return templates.TemplateResponse(request, 'update-todo.html', context={'todo': todo, 'user': user})
+    except:
+        return redirect_to_login()
+
+
 # ENDPOINTS #
 @router.get('/', status_code=status.HTTP_200_OK)
 async def read_all(user: user_token_dependency, db: db_dependency_injection):
